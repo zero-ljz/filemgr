@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>File Manager</title>
-  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <!--<script src="https://cdn.jsdelivr.net/npm/vuex/dist/vuex.js"></script>-->
-  <script src="https://cdn.jsdelivr.net/npm/vue-router/dist/vue-router.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://gcore.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!--<script src="https://gcore.jsdelivr.net/npm/vuex/dist/vuex.js"></script>-->
+  <script src="https://gcore.jsdelivr.net/npm/vue-router/dist/vue-router.js"></script>
+  <script src="https://gcore.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <!--<script src="static/js/filemgr.js"></script>-->
+  <link rel="icon" href="data:," />
 </head>
 <body>
   <div id="app">
@@ -44,10 +45,10 @@
         <button @click="copySelected">Copy Selected</button>
         <button @click="moveSelected">Move Selected</button>
     </div>
-    <div>
+    <!-- <div>
     <input type="checkbox" v-model="selectAll" @change="toggleSelectAll"> 全选
-    </div>
-    <ul>
+    </div> -->
+    <!-- <ul>
     <li>
     <button @click="goToParentDirectory">../</button>
       <li v-for="file in files" :key="file.name">
@@ -68,7 +69,56 @@
         <button v-if="!file.is_directory" @click="downloadFile(file.path)">Download</button>
         <button v-if="!file.is_directory" @click="editFileContent(file.path)">Edit</button>
       </li>
-    </ul>
+    </ul> -->
+
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Select</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Size</th>
+          <th>Modified At</th>
+          <th>Created At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <input type="checkbox" v-model="selectAll" @change="toggleSelectAll"> 全选
+          </td>
+          <td>
+            <button @click="goToParentDirectory">../</button>
+          </td>
+        </tr>
+        <tr v-for="file in files" :key="file.name">
+          <td>
+            <input type="checkbox" v-model="file.selected">
+          </td>
+          <td>
+            <a v-if="!file.is_directory" @click="handleFileClick(file)" :value="file.path">{{ file.name }}</a>
+            <router-link v-if="file.is_directory" :to="`/directory/${file.path}`">{{ file.name }}</router-link>
+          </td>
+          <td>
+            <span v-if="file.is_directory">Directory</span>
+            <span v-else>File</span>
+          </td>
+          <td>{{ formattedSize(file.size) }}</td>
+          <td>{{ formatDateTime(file.modified_at) }}</td>
+          <td>+{{ formatDateTime(file.created_at) }}</td>
+          <td>
+            <button @click="deleteFile(file.path)">Delete</button>
+            <button @click="copyFile(file.path)">Copy</button>
+            <button @click="moveFile(file.path)">Move</button>
+            <button @click="renameFile(file.path)">Rename</button>
+            <button v-if="!file.is_directory" @click="downloadFile(file.path)">Download</button>
+            <button v-if="!file.is_directory" @click="editFileContent(file.path)">Edit</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
 
   <!-- 编辑文件内容对话框 -->
