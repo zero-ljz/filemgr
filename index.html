@@ -150,7 +150,7 @@
 
       const router = new VueRouter({
         routes: [
-          { path: '/directory/:directory*', component: Directory }
+          { path: '/directory/:directory(.*)', component: Directory }
         ]
       });
 
