@@ -173,7 +173,7 @@
       },
       created() {
         this.getFileList(this.$route.params.directory); // 初始化加载文件列表
-      
+      console.log('初始化加载' + this.$route.params.directory);
         // 监听路由参数变化
         this.$watch(
           () => this.$route.params.directory,
@@ -184,7 +184,12 @@
         );
       },
       methods: {
-        getFileList(directory) {
+        getFileList(directory = this.currentDirectory) {
+          console.log('getFileList: ' +directory);
+
+          // 结尾自动补斜杠
+          directory = directory.endsWith('/') ? directory : directory + '/';
+
           axios.get('/files', {
             params: {
               directory: directory
@@ -204,7 +209,13 @@
             }
         },
         goToParentDirectory() {
-            const parentDirectory = this.currentDirectory.replace(/\\/g, '/').split('/').slice(0, -1).join('/');
+          console.log('goToParentDirectory');
+            const parentDirectory = this.currentDirectory
+            .replace(/\\/g, '/') // 统一替换成正斜杠
+            .split('/') // 用分隔符分割成数组
+            .slice(0, -1) // 去除最后一个元素
+            .join('/'); // 用分隔符拼接成字符串
+
             // 检查上级目录是否为空
             if (parentDirectory === '') {
               this.currentDirectory = '/';
@@ -213,11 +224,10 @@
             }
             // 更新路由参数
             this.$router.push(`/directory/${this.currentDirectory}`);
-            // 获取文件列表
-            this.getFileList();
 
             //this.getFileList(this.$route.params.directory);
         },
+
         formattedSize(size) {
             if (size >= 1024 * 1024 * 1024) {
                 return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
@@ -455,6 +465,7 @@ editFileContent(filePath) {
         }
       },
       mounted() {
+        console.log("mounted");
         // 获取路由参数
     const directory = this.$route.params.directory;
     if (directory) {

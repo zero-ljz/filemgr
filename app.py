@@ -4,15 +4,15 @@ import urllib.request
 import zipfile
 import subprocess
 import mimetypes
-from bottle import Bottle, request, response, static_file, template, abort
+from bottle import Bottle, request, response, template, static_file, redirect, abort
 
 app = Bottle()
 
 
 @app.route('/')
 def index():
-    return static_file('filemgr.html', root='.')
-    return template('templates/filemgr.html')
+    return static_file('index.html', root='.')
+
 
 
 # 获取文件列表
