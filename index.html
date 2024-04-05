@@ -16,7 +16,7 @@
     <div>
       <label for="directory">Current Directory: </label>
       <input type="text" id="directory" v-model="currentDirectory">
-      <button @click="getFileList">Get Files</button>
+      <button @click="getFileList(currentDirectory)">Get Files</button>
     </div>
     <div>
       <label for="newDirectory">New Directory Name: </label>
@@ -40,11 +40,18 @@
       <input type="text" id="unpackFilename" v-model="unpackFilename">
       <button @click="unpackFiles">Unpack Files</button>
     </div>
+
+    <hr />
+    
     <div>
-        <button @click="deleteSelected">Delete Selected</button>
-        <button @click="copySelected">Copy Selected</button>
-        <button @click="moveSelected">Move Selected</button>
+      <button @click="deleteSelected">Delete Selected</button>
+      <button @click="copySelected">Copy Selected</button>
+      <button @click="moveSelected">Move Selected</button>
     </div>
+    
+    <router-view></router-view>
+    <button @click="goToParentDirectory">../</button>
+
     <!-- <div>
     <input type="checkbox" v-model="selectAll" @change="toggleSelectAll"> 全选
     </div> -->
@@ -72,27 +79,18 @@
     </ul> -->
 
     
-    <table>
+    <table border="1" cellSpacing="0" style="width: 100%;">
       <thead>
         <tr>
-          <th>Select</th>
+          <th><input type="checkbox" v-model="selectAll" @change="toggleSelectAll"></th>
           <th>Name</th>
           <th>Type</th>
           <th>Size</th>
           <th>Modified At</th>
-          <th>Created At</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>
-            <input type="checkbox" v-model="selectAll" @change="toggleSelectAll"> 全选
-          </td>
-          <td>
-            <button @click="goToParentDirectory">../</button>
-          </td>
-        </tr>
         <tr v-for="file in files" :key="file.name">
           <td>
             <input type="checkbox" v-model="file.selected">
@@ -107,13 +105,12 @@
           </td>
           <td>{{ formattedSize(file.size) }}</td>
           <td>{{ formatDateTime(file.modified_at) }}</td>
-          <td>+{{ formatDateTime(file.created_at) }}</td>
           <td>
-            <button @click="deleteFile(file.path)">Delete</button>
-            <button @click="copyFile(file.path)">Copy</button>
-            <button @click="moveFile(file.path)">Move</button>
+            <button @click="deleteFile(file.path)">del</button>
+            <button @click="copyFile(file.path)">cp</button>
+            <button @click="moveFile(file.path)">mv</button>
             <button @click="renameFile(file.path)">Rename</button>
-            <button v-if="!file.is_directory" @click="downloadFile(file.path)">Download</button>
+            <button v-if="!file.is_directory" @click="downloadFile(file.path)">down</button>
             <button v-if="!file.is_directory" @click="editFileContent(file.path)">Edit</button>
           </td>
         </tr>
@@ -131,7 +128,7 @@
 
 
 
-<router-view></router-view>
+
 
   </div>
 
@@ -437,7 +434,7 @@ editFileContent(filePath) {
         packFiles() {
           axios.post('/files/pack', {
             files: this.getSelectedFiles(),
-            zip_filename: this.zipFilename
+            zip_filename: this.zipFilename // 检测到用户输入的是相对路径时自动转为绝对路径
           })
           .then(response => {
             console.log(response.data.message);
