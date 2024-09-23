@@ -270,19 +270,19 @@
           });
         },
         copyFile(filename) {
-          const destination = prompt('Enter destination path:');
+          const destination = prompt('Enter destination path:', filename);
           if (destination) {
             this.performFileAction('copy', filename, destination);
           }
         },
         moveFile(filename) {
-          const destination = prompt('Enter destination path:');
+          const destination = prompt('Enter destination path:', filename);
           if (destination) {
             this.performFileAction('move', filename, destination);
           }
         },
         renameFile(filename) {
-          const newFilename = prompt('Enter new filename:');
+          const newFilename = prompt('Enter new filename:', filename.replace(/\\/g, '/').split('/').pop());
           if (newFilename) {
             this.performFileAction('rename', filename, newFilename);
           }

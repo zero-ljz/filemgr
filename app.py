@@ -18,7 +18,7 @@ def index():
 # 获取文件列表
 @app.get("/files")
 def get_file_list():
-    directory = request.query.get("directory", "/")
+    directory = request.query.directory or "/"
     directory_path = os.path.abspath(directory)
     file_list = []
     
